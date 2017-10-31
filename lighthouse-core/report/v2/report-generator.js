@@ -46,7 +46,7 @@ class ReportGeneratorV2 {
 
   /**
    * Computes the weighted-average of the score of the list of items.
-   * @param {!Array<{score: number|undefined, weight: number|undefined}} items
+   * @param {!Array<{score: number|undefined, weight: number|undefined}>} items
    * @return {number}
    */
   static arithmeticMean(items) {

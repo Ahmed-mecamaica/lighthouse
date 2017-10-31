@@ -166,20 +166,21 @@ class Audit {
 
 module.exports = Audit;
 
-/** @typedef {
- * !Array<{
- *   key: string,
- *   itemType: string,
- *   text: string,
- * }>}
+/**
+ * @typedef {Object} Audit.Heading
+ * @property {string} key
+ * @property {string} itemType
+ * @property {string} text
  */
-Audit.Headings; // eslint-disable-line no-unused-expressions
 
-/** @typedef {{
- *   results: !Array<!Object<string, string>>,
- *   headings: !Audit.Headings,
- *   passes: boolean,
- *   debugString: (string|undefined)
- * }}
+/**
+ * @typedef {Array<Audit.Heading>} Audit.Headings
  */
-Audit.HeadingsResult; // eslint-disable-line no-unused-expressions
+
+/**
+ * @typedef {Object} Audit.HeadingsResult
+ * @property {number} results
+ * @property {Audit.Headings} headings
+ * @property {boolean} passes
+ * @property {string=} debugString
+ */

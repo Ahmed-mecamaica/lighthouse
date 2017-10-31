@@ -50,7 +50,7 @@ class Connection {
   /**
    * Bind listeners for connection events
    * @param {!string} eventName
-   * @param {function(...)} cb
+   * @param {function(...args)} cb
    */
   on(eventName, cb) {
     if (eventName !== 'notification') {

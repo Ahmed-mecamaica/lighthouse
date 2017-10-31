@@ -10,7 +10,7 @@ const log = require('lighthouse-logger');
 const ChromeProtocol = require('./gather/connections/cri.js');
 const Config = require('./config/config');
 
-/**
+/*
  * The relationship between these root modules:
  *
  *   index.js  - the require('lighthouse') hook for Node modules (including the CLI)
@@ -25,7 +25,13 @@ const Config = require('./config/config');
  *
  */
 
-module.exports = function(url, flags = {}, configJSON) {
+/**
+ * @param {string} url
+ * @param {!LH.Flags} flags
+ * @param {!LH.Config|undefined} configJSON
+ * @return {!Promise<!LH.Results>}
+ */
+function lighthouse(url, flags = {}, configJSON) {
   const startTime = Date.now();
   return Promise.resolve().then(_ => {
     // set logging preferences, assume quiet
@@ -48,9 +54,11 @@ module.exports = function(url, flags = {}, configJSON) {
         return lighthouseResults;
       });
   });
-};
+}
 
-module.exports.getAuditList = Runner.getAuditList;
-module.exports.traceCategories = require('./gather/driver').traceCategories;
-module.exports.Audit = require('./audits/audit');
-module.exports.Gatherer = require('./gather/gatherers/gatherer');
+lighthouse.getAuditList = Runner.getAuditList;
+lighthouse.traceCategories = require('./gather/driver').traceCategories;
+lighthouse.Audit = require('./audits/audit');
+lighthouse.Gatherer = require('./gather/gatherers/gatherer');
+
+module.exports = lighthouse;

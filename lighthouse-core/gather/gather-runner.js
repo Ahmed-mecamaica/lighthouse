@@ -11,9 +11,8 @@ const URL = require('../lib/url-shim');
 const NetworkRecorder = require('../lib/network-recorder.js');
 
 /**
- * @typedef {!Object<string, !Array<!Promise<*>>>}
+ * @typedef {!Object<string, !Array<!Promise<*>>>} GathererResults
  */
-let GathererResults; // eslint-disable-line no-unused-vars
 
 /**
  * Class that drives browser to load the page and runs gatherer lifecycle hooks.

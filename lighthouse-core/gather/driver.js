@@ -107,7 +107,7 @@ class Driver {
   /**
    * Bind listeners for protocol events
    * @param {!string} eventName
-   * @param {function(...)} cb
+   * @param {function(...args)} cb
    */
   on(eventName, cb) {
     if (this._eventEmitter === null) {
@@ -123,7 +123,7 @@ class Driver {
    * Bind a one-time listener for protocol events. Listener is removed once it
    * has been called.
    * @param {!string} eventName
-   * @param {function(...)} cb
+   * @param {function(...args)} cb
    */
   once(eventName, cb) {
     if (this._eventEmitter === null) {
@@ -137,7 +137,7 @@ class Driver {
   /**
    * Unbind event listeners
    * @param {!string} eventName
-   * @param {function(...)} cb
+   * @param {function(...args)} cb
    */
   off(eventName, cb) {
     if (this._eventEmitter === null) {
