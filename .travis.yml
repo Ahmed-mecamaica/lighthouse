@@ -18,6 +18,10 @@ cache:
     - lighthouse-extension/node_modules
     - lighthouse-viewer/node_modules
     - /home/travis/.rvm/gems/
+before_install:
+  # TODO: remove after yarn is 1.0+ on Travis: https://github.com/travis-ci/travis-ci/issues/7566
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH="$HOME/.yarn/bin:$PATH"
 install:
   - yarn
   # travis can't handle the parallel install (without caches)

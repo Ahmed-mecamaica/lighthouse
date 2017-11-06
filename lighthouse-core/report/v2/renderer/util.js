@@ -85,18 +85,12 @@ class Util {
   }
 
   /**
-   * @typedef {Object} urlDisplayOpts
-   * @property {number=} numPathParts
-   * @property {boolean=} preserveQuery
-   * @property {boolean=} preserveHost
-   */
-
-  /**
    * @param {!URL} parsedUrl
-   * @param {urlDisplayOpts=} options
+   * @param {{numPathParts: (number|undefined), preserveQuery: (boolean|undefined), preserveHost: (boolean|undefined)}=} options
    * @return {string}
    */
-  static getURLDisplayName(parsedUrl, options = {}) {
+  static getURLDisplayName(parsedUrl, options) {
+    options = options || {};
     const numPathParts = options.numPathParts !== undefined ? options.numPathParts : 2;
     const preserveQuery = options.preserveQuery !== undefined ? options.preserveQuery : true;
     const preserveHost = options.preserveHost || false;
