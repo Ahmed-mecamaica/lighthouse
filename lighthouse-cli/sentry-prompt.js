@@ -17,10 +17,13 @@ const MESSAGE = `${log.reset}We're constantly trying to improve Lighthouse and i
   `May we anonymously report runtime exceptions to improve the tool over time?\n  ` +
   `${log.reset}Learn more: https://github.com/GoogleChrome/lighthouse/blob/master/docs/error-reporting.md`;
 
-async function prompt() {
+/**
+ * @return {!Promise<boolean>}
+ */
+function prompt() {
   if (!process.stdout.isTTY || process.env.CI) {
     // Default non-interactive sessions to false
-    return false;
+    return Promise.resolve(false);
   }
 
   /** @type {NodeJS.Timer|undefined} */
@@ -54,16 +57,22 @@ async function prompt() {
   ]);
 }
 
-async function askPermission() {
+/**
+ * @return {!Promise<boolean>}
+ */
+function askPermission() {
   const configstore = new Configstore('lighthouse');
   let isErrorReportingEnabled = configstore.get('isErrorReportingEnabled');
   if (typeof isErrorReportingEnabled === 'boolean') {
-    return isErrorReportingEnabled;
+    return Promise.resolve(isErrorReportingEnabled);
   }
 
-  isErrorReportingEnabled = await prompt();
-  configstore.set('isErrorReportingEnabled', isErrorReportingEnabled);
-  return isErrorReportingEnabled;
+  return prompt()
+    .then(response => {
+      isErrorReportingEnabled = response;
+      configstore.set('isErrorReportingEnabled', isErrorReportingEnabled);
+      return isErrorReportingEnabled;
+    });
 }
 
 module.exports = {

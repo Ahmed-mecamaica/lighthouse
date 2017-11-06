@@ -71,27 +71,32 @@ if (cliFlags.output === printer.OutputMode.json && !cliFlags.outputPath) {
   cliFlags.outputPath = 'stdout';
 }
 /**
- * @return {!Promise<(void|!Object)>}
+ * @return {!Promise<(void|!LH.Results)>}
  */
-async function run() {
-  if (typeof cliFlags.enableErrorReporting === 'undefined') {
-    cliFlags.enableErrorReporting = await askPermission();
-  }
+function run() {
+  return Promise.resolve()
+    .then(_ => {
+      if (typeof cliFlags.enableErrorReporting === 'undefined') {
+        return askPermission().then(answer => {
+          cliFlags.enableErrorReporting = answer;
+        });
+      }
+    }).then(_ => {
+      Sentry.init({
+        url,
+        flags: cliFlags,
+        environmentData: {
+          name: 'redacted', // prevent sentry from using hostname
+          environment: isDev() ? 'development' : 'production',
+          release: pkg.version,
+          tags: {
+            channel: 'cli',
+          },
+        },
+      });
 
-  Sentry.init({
-    url,
-    flags: cliFlags,
-    environmentData: {
-      name: 'redacted', // prevent sentry from using hostname
-      environment: isDev() ? 'development' : 'production',
-      release: pkg.version,
-      tags: {
-        channel: 'cli',
-      },
-    },
-  });
-
-  return runLighthouse(url, cliFlags, config);
+      return runLighthouse(url, cliFlags, config);
+    });
 }
 
 module.exports = {

@@ -9,7 +9,7 @@
 
 const path = require('path');
 
-const printer = require('./printer');
+const Printer = require('./printer');
 const ChromeLauncher = require('chrome-launcher');
 
 const yargsParser = require('yargs-parser');
@@ -52,7 +52,7 @@ function parseChromeFlags(flags = '') {
  * @param {!LH.Flags} flags
  * @return {!Promise<!LH.LaunchedChrome>}
  */
-async function getDebuggableChrome(flags) {
+function getDebuggableChrome(flags) {
   return ChromeLauncher.launch({
     port: flags.port,
     chromeFlags: parseChromeFlags(flags.chromeFlags),
@@ -107,7 +107,8 @@ function handleError(err) {
  * @param {!LH.Flags} flags
  * @return {!Promise<void>}
  */
-async function saveResults(results, artifacts, flags) {
+function saveResults(results, artifacts, flags) {
+  let promise = Promise.resolve(results);
   const cwd = process.cwd();
   // Use the output path as the prefix for all generated files.
   // If no output path is set, generate a file prefix using the URL and date.
@@ -121,59 +122,69 @@ async function saveResults(results, artifacts, flags) {
   }
 
   if (flags.saveAssets) {
-    await assetSaver.saveAssets(artifacts, results.audits, resolvedPath);
+    promise = promise.then(_ => assetSaver.saveAssets(artifacts, results.audits, resolvedPath));
   }
 
-  if (Array.isArray(flags.output)) {
-    for (const outputType of flags.output) {
-      const extension = outputType === 'domhtml' ? 'html' : outputType;
-      const outputPath = `${resolvedPath}.report.${extension}`;
-      await printer.write(results, outputType, outputPath);
+  return promise.then(_ => {
+    if (Array.isArray(flags.output)) {
+      return flags.output.reduce((innerPromise, outputType) => {
+        const extension = outputType === 'domhtml' ? 'html' : outputType;
+        const outputPath = `${resolvedPath}.report.${extension}`;
+        return innerPromise.then(() => Printer.write(results, outputType, outputPath));
+      }, Promise.resolve());
+    } else {
+      const extension = flags.output === 'domhtml' ? 'html' : flags.output;
+      const outputPath =
+          flags.outputPath || `${resolvedPath}.report.${extension}`;
+      return Printer.write(results, flags.output, outputPath).then(_ => {
+        if (flags.output === Printer.OutputMode[Printer.OutputMode.html] ||
+            flags.output === Printer.OutputMode[Printer.OutputMode.domhtml]) {
+          if (flags.view) {
+            opn(outputPath, {wait: false});
+          } else {
+            log.log(
+                'CLI',
+                // eslint-disable-next-line max-len
+                'Protip: Run lighthouse with `--view` to immediately open the HTML report in your browser');
+          }
+        }
+      });
     }
-  } else {
-    const extension = flags.output === 'domhtml' ? 'html' : flags.output;
-    const outputPath = flags.outputPath || `${resolvedPath}.report.${extension}`;
-    await printer.write(results, flags.output, outputPath);
-    if (flags.output === printer.OutputMode.html || flags.output === printer.OutputMode.domhtml) {
-      if (flags.view) {
-        opn(outputPath, {wait: false});
-      } else {
-        // eslint-disable-next-line max-len
-        log.log('CLI', 'Protip: Run lighthouse with `--view` to immediately open the HTML report in your browser');
-      }
-    }
-  }
+  });
 }
 
 /**
  * @param {string} url
  * @param {!LH.Flags} flags
  * @param {!LH.Config|undefined} config
- * @return {!Promise<!LH.Results|undefined>}
+ * @return {!Promise<!LH.Results|void>}
  */
-async function runLighthouse(url, flags, config) {
+function runLighthouse(url, flags, config) {
+  /** @type {!LH.LaunchedChrome} */
   let launchedChrome;
 
-  try {
-    launchedChrome = await getDebuggableChrome(flags);
-    flags.port = launchedChrome.port;
-    const results = await lighthouse(url, flags, config);
+  return getDebuggableChrome(flags)
+    .then(launchedChromeInstance => {
+      launchedChrome = launchedChromeInstance;
+      flags.port = launchedChrome.port;
+      return lighthouse(url, flags, config);
+    }).then(results => {
+      const artifacts = results.artifacts;
+      delete results.artifacts;
 
-    const artifacts = results.artifacts;
-    delete results.artifacts;
-
-    await saveResults(results, artifacts, flags);
-    await launchedChrome.kill();
-
-    return results;
-  } catch (err) {
-    if (launchedChrome !== undefined) {
-      // TODO: needs cast: https://github.com/Microsoft/TypeScript/issues/19193
-      await /** @type {!LH.LaunchedChrome} */ (launchedChrome).kill();
-    }
-
-    handleError(err);
-  }
+      return saveResults(results, artifacts, flags)
+        .then(_ => launchedChrome.kill())
+        .then(_ => results);
+    }).catch(err => {
+      return Promise.resolve()
+      .then(_ => {
+        if (launchedChrome !== undefined) {
+          return launchedChrome.kill()
+            // TODO: keeps tsc happy (erases return type) but is useless.
+            .then(_ => {});
+        }
+      }).then(_ => handleError(err));
+    });
 }
 
 module.exports = {
