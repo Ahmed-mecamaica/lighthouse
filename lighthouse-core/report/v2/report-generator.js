@@ -66,6 +66,7 @@ class ReportGeneratorV2 {
    * Replaces all the specified strings in source without serial replacements.
    * @param {string} source
    * @param {!Array<{search: string, replacement: string}>} replacements
+   * @return {string}
    */
   static replaceStrings(source, replacements) {
     if (replacements.length === 0) {
@@ -82,9 +83,9 @@ class ReportGeneratorV2 {
 
   /**
    * Returns the report JSON object with computed scores.
-   * @param {{categories: !Object<{audits: !Array}>}} config
+   * @param {{categories: !Object<string, {id: string|undefined, weight: number|undefined, audits: !Array<{id: string, weight: number|undefined}>}>}} config
    * @param {!Object<{score: ?number|boolean|undefined}>} resultsByAuditId
-   * @return {{categories: !Array<{audits: !Array<{score: number, result: !Object}>}>}}
+   * @return {{score: number, categories: !Array<{audits: !Array<{score: number, result: !Object}>}>}}
    */
   generateReportJson(config, resultsByAuditId) {
     const categories = Object.keys(config.categories).map(categoryId => {

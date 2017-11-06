@@ -8,14 +8,16 @@
     "strict": true,
     "typeRoots": [
       "@types",
-      "../typings"
-    ]
+      "./typings"
+    ],
+
+    "diagnostics": true
   },
   "include": [
-    "*.js",
-    "../typings/externs.d.ts"
+    "lighthouse-cli/**/*.js",
+    "./typings/externs.d.ts"
   ],
   "exclude": [
-    "**/lighthouse-core/*"
+    "lighthouse-cli/test/**/*.js"
   ]
 }

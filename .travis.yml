@@ -32,6 +32,7 @@ script:
   - yarn bundlesize
   - yarn lint
   - yarn unit
+  - yarn type
   - yarn closure
   - yarn smoke
   - yarn smokehouse

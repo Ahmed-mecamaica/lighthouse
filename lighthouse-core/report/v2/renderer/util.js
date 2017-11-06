@@ -85,8 +85,15 @@ class Util {
   }
 
   /**
+   * @typedef {Object} urlDisplayOpts
+   * @property {number=} numPathParts
+   * @property {boolean=} preserveQuery
+   * @property {boolean=} preserveHost
+   */
+
+  /**
    * @param {!URL} parsedUrl
-   * @param {{numPathParts: (number|undefined), preserveQuery: (boolean|undefined), preserveHost: (boolean|undefined)}=} options
+   * @param {urlDisplayOpts=} options
    * @return {string}
    */
   static getURLDisplayName(parsedUrl, options = {}) {
@@ -167,5 +174,6 @@ class Util {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Util;
 } else {
+  // @ts-ignore
   self.Util = Util;
 }

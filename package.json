@@ -27,7 +27,7 @@
     "coverage": "istanbul cover -x \"**/third_party/**\" _mocha -- $(find */test -name '*-test.js') --timeout 10000 --reporter progress --report lcovonly",
     "coveralls": "yarn coverage && cat ./coverage/lcov.info | coveralls && ./node_modules/codecov/bin/codecov",
     "start": "node ./lighthouse-cli/index.js",
-    "test": "yarn lint --quiet && yarn unit && yarn closure",
+    "test": "yarn lint --quiet && yarn unit && yarn type && yarn closure",
     "unit-core": "bash lighthouse-core/scripts/run-mocha.sh --core",
     "unit-cli": "bash lighthouse-core/scripts/run-mocha.sh --cli",
     "unit-viewer": "bash lighthouse-core/scripts/run-mocha.sh --viewer",
@@ -44,7 +44,8 @@
     "smokehouse": "node lighthouse-cli/test/smokehouse/smokehouse.js",
     "deploy-viewer": "cd lighthouse-viewer && gulp deploy",
     "bundlesize": "bundlesize",
-    "plots-smoke": "bash plots/test/smoke.sh"
+    "plots-smoke": "bash plots/test/smoke.sh",
+    "type": "tsc -p ."
   },
   "devDependencies": {
     "babel-core": "^6.16.0",
@@ -95,6 +96,9 @@
     "ws": "1.1.2",
     "yargs": "3.32.0",
     "yargs-parser": "7.0.0"
+  },
+  "resolutions": {
+    "chrome-launcher/@types/node": "*"
   },
   "repository": "GoogleChrome/lighthouse",
   "keywords": [
