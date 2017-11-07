@@ -168,22 +168,25 @@ function runLighthouse(url, flags, config) {
       launchedChrome = launchedChromeInstance;
       flags.port = launchedChrome.port;
       return lighthouse(url, flags, config);
-    }).then(results => {
+    })
+    .then(results => {
       const artifacts = results.artifacts;
       delete results.artifacts;
 
       return saveResults(results, artifacts, flags)
         .then(_ => launchedChrome.kill())
         .then(_ => results);
-    }).catch(err => {
+    })
+    .catch(err => {
       return Promise.resolve()
-      .then(_ => {
-        if (launchedChrome !== undefined) {
-          return launchedChrome.kill()
-            // TODO: keeps tsc happy (erases return type) but is useless.
-            .then(_ => {});
-        }
-      }).then(_ => handleError(err));
+        .then(_ => {
+          if (launchedChrome !== undefined) {
+            return launchedChrome.kill()
+              // TODO: keeps tsc happy (erases return type) but is useless.
+              .then(_ => {});
+          }
+        })
+        .then(_ => handleError(err));
     });
 }
 

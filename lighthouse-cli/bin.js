@@ -81,7 +81,8 @@ function run() {
           cliFlags.enableErrorReporting = answer;
         });
       }
-    }).then(_ => {
+    })
+    .then(_ => {
       Sentry.init({
         url,
         flags: cliFlags,
