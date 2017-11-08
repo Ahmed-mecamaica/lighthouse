@@ -48,6 +48,12 @@
     "type": "tsc -p ."
   },
   "devDependencies": {
+    "@types/configstore": "^2.1.1",
+    "@types/inquirer": "^0.0.35",
+    "@types/node": "*",
+    "@types/opn": "^3.0.28",
+    "@types/update-notifier": "^1.0.2",
+    "@types/yargs": "^8.0.2",
     "babel-core": "^6.16.0",
     "bundlesize": "^0.14.4",
     "codecov": "^2.2.0",
@@ -68,12 +74,6 @@
     "zone.js": "^0.7.3"
   },
   "dependencies": {
-    "@types/configstore": "^2.1.1",
-    "@types/inquirer": "^0.0.35",
-    "@types/node": "*",
-    "@types/opn": "^3.0.28",
-    "@types/update-notifier": "^1.0.2",
-    "@types/yargs": "^8.0.2",
     "axe-core": "2.4.1",
     "chrome-devtools-frontend": "1.0.422034",
     "chrome-launcher": "0.8.1",
